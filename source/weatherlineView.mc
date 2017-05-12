@@ -95,6 +95,8 @@ class weatherlineView extends Ui.View {
         var icon;
         var value;
         var text;
+        var fahrenheit = System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE;
+
         for(var i = 0; i < _hourly.size(); i++) {
             var hour = _hourly[i];
             var x = i * spacing;
@@ -104,7 +106,13 @@ class weatherlineView extends Ui.View {
                 icon = getIcon(hour["icon"]);
                 icon.setLocation(x - 10, y - 25);
                 icon.draw(dc);
-                value = Math.round(hour["temperature"]).format("%i");
+
+                if (fahrenheit) {
+                    value = Math.round(hour["temperature"] * 9 / 5 + 32).format("%i");
+                } else {
+                    value = Math.round(hour["temperature"]).format("%i");
+                }
+
                 text = new Ui.Text({:text => value, :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER});
                 text.setLocation(x, y);
                 text.draw(dc);
@@ -131,7 +139,6 @@ class weatherlineView extends Ui.View {
             "partly-cloudy-day" => Rez.Drawables.PartlyCloudyDay,
             "partly-cloudy-night" => Rez.Drawables.PartlyCloudyNight
         };
-        System.println(icon);
         return new Ui.Bitmap({:rezId=>ids[icon]});
     }
 
