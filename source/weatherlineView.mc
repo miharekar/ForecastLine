@@ -1,6 +1,7 @@
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 using Toybox.Math;
+using Toybox.Time.Gregorian;
 
 class weatherlineView extends Ui.View {
     var _hourly = [];
@@ -60,21 +61,30 @@ class weatherlineView extends Ui.View {
     }
 
     function drawCircles(dc) {
-        dc.setColor(Gfx.COLOR_ORANGE, Gfx.COLOR_TRANSPARENT);
-        dc.setPenWidth(2);
-        var spacing = (_screenSize[0] - 10) / (_hourly.size() - 1).toFloat();
+
+        var spacing = (_screenSize[0]) / (_hourly.size() - 1).toFloat();
         var degreeHeight = -_screenSize[1] / 50;
         var midScreen = _screenSize[1] / 2;
         var first = _hourly[0]["temperature"];
         var previous_x = null;
         var previous_y = null;
 
+        for(var i = 0; i < _hourly.size() - 1; i++) {
+            var x = i * spacing + (spacing/2);
+
+            dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
+            dc.setPenWidth(2);
+            dc.drawLine(x, 0, x, _screenSize[1]);
+        }
+
         for(var i = 0; i < _hourly.size(); i++) {
             var hour = _hourly[i];
-            var x = 5 + i * spacing;
+            var x = i * spacing;
             var y = midScreen + ((hour["temperature"] - first) * degreeHeight);
 
             if( previous_x != null ) {
+                dc.setColor(Gfx.COLOR_ORANGE, Gfx.COLOR_TRANSPARENT);
+                dc.setPenWidth(2);
                 dc.drawLine(previous_x, previous_y, x, y);
             }
 
@@ -82,16 +92,28 @@ class weatherlineView extends Ui.View {
             previous_y = y;
         }
 
-        for(var i = 1; i < _hourly.size(); i = i + 3) {
+        var icon;
+        var value;
+        var text;
+        for(var i = 0; i < _hourly.size(); i++) {
             var hour = _hourly[i];
-            var x = 5 + i * spacing;
+            var x = i * spacing;
             var y = midScreen + ((hour["temperature"] - first) * degreeHeight);
-            var icon = getIcon(hour["icon"]);
-            icon.setLocation(x - 10, y - 25);
-            icon.draw(dc);
-            var value = (Math.round(hour["temperature"]*10)/10).format("%.1f");
-            var text = new Ui.Text({:text => value, :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER});
-            text.setLocation(x, y);
+
+            if (i % 2 == 1) {
+                icon = getIcon(hour["icon"]);
+                icon.setLocation(x - 10, y - 25);
+                icon.draw(dc);
+                value = Math.round(hour["temperature"]).format("%i");
+                text = new Ui.Text({:text => value, :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER});
+                text.setLocation(x, y);
+                text.draw(dc);
+            }
+
+            var info = Gregorian.info(new Time.Moment(hour["time"]), Time.FORMAT_LONG);
+            value = info.hour.format("%02d");
+            text = new Ui.Text({:text => value, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER});
+            text.setLocation(x, 50);
             text.draw(dc);
         }
     }
@@ -100,10 +122,14 @@ class weatherlineView extends Ui.View {
         var ids = {
             "clear-day" => Rez.Drawables.ClearDay,
             "clear-night" => Rez.Drawables.ClearNight,
-            "partly-cloudy-night" => Rez.Drawables.PartlyCloudyNight,
-            "partly-cloudy-day" => Rez.Drawables.PartlyCloudyDay,
+            "rain" => Rez.Drawables.Rain,
+            "snow" => Rez.Drawables.Snow,
+            "sleet" => Rez.Drawables.Sleet,
+            "wind" => Rez.Drawables.Wind,
+            "fog" => Rez.Drawables.Fog,
             "cloudy" => Rez.Drawables.Cloudy,
-            "rain" => Rez.Drawables.Rain
+            "partly-cloudy-day" => Rez.Drawables.PartlyCloudyDay,
+            "partly-cloudy-night" => Rez.Drawables.PartlyCloudyNight
         };
         System.println(icon);
         return new Ui.Bitmap({:rezId=>ids[icon]});

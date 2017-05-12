@@ -2,8 +2,12 @@
     <bitmap id="LauncherIcon" filename="launcher_icon.png" />
     <bitmap id="ClearDay" filename="clear_day.png" />
     <bitmap id="ClearNight" filename="clear_night.png" />
-    <bitmap id="PartlyCloudyNight" filename="partly_cloudy_night.png" />
-    <bitmap id="PartlyCloudyDay" filename="partly_cloudy_day.png" />
-    <bitmap id="Cloudy" filename="cloudy.png" />
     <bitmap id="Rain" filename="rain.png" />
+    <bitmap id="Snow" filename="snow.png" />
+    <bitmap id="Sleet" filename="sleet.png" />
+    <bitmap id="Wind" filename="wind.png" />
+    <bitmap id="Fog" filename="fog.png" />
+    <bitmap id="Cloudy" filename="cloudy.png" />
+    <bitmap id="PartlyCloudyDay" filename="partly_cloudy_day.png" />
+    <bitmap id="PartlyCloudyNight" filename="partly_cloudy_night.png" />
 </drawables>
