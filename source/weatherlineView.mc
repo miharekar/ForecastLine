@@ -101,7 +101,7 @@ class weatherlineView extends Ui.View {
         var previous_x = null;
         var previous_y = null;
         var precipitation = ["snow", "rain", "sleet"];
-        dc.setPenWidth(2);
+        dc.setPenWidth(3);
         for(var i = 0; i < data.size(); i++) {
             temperature = data[i]["temperature"];
             x = i * spacing;
