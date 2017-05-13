@@ -18,10 +18,6 @@ class weatherlineApp extends App.AppBase {
     function onStop(state) {
     }
 
-    function onEvent(properties) {
-        System.println(properties);
-    }
-
     // Return the initial view of your application here
     function getInitialView() {
         Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));

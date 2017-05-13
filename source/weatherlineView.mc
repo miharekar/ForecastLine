@@ -38,6 +38,8 @@ class weatherlineView extends Ui.View {
         data = App.getApp().getProperty("hourly");
         if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
             display(dc);
+        } else {
+            drawEmpty(dc);
         }
     }
 
@@ -63,6 +65,10 @@ class weatherlineView extends Ui.View {
         dc.clear();
         dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
         dc.fillRectangle(0, 0, _screenSize[0], _screenSize[1]);
+    }
+
+    function drawEmpty(dc) {
+        new Ui.Text({:text => "Waiting for Location", :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => midScreen}).draw(dc);
     }
 
     function drawVerticalLines(dc, size) {
