@@ -11,6 +11,7 @@ class weatherlineApp extends App.AppBase {
 
     // onStart() is called on application start up
     function onStart(state) {
+        fetchData();
     }
 
     // onStop() is called when your application is exiting
@@ -25,29 +26,30 @@ class weatherlineApp extends App.AppBase {
     function getInitialView() {
         Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
         _view = new weatherlineView();
+        _view.updateModel();
         return [_view];
     }
 
-    function onPosition(info)
-    {
-        _view.updateModel(:coordinates);
+    function onPosition(info) {
         var latLon = info.position.toDegrees();
         var coordinates = latLon[0].toString() + "," + latLon[1].toString();
-        var url = "https://api.darksky.net/forecast/35f98da0680c7efd4692173115deda93/";
-        Comm.makeWebRequest(
-            url + coordinates,
-            {"exclude" => "currently,minutely,daily,alerts,flags", "units" => "si"},
-            {},
-            method(:onResponse)
-        );
+        App.getApp().setProperty("coordinates", coordinates);
+        fetchData();
+    }
+
+    function fetchData() {
+        var url = "https://join.run/dark_sky/hourly";
+        var coordinates = App.getApp().getProperty("coordinates");
+        if (coordinates != null) {
+            Comm.makeWebRequest(url, {"coordinates" => coordinates}, {}, method(:onResponse));
+        }
     }
 
     // Handles response from server
     function onResponse(responseCode, data) {
-        System.println(responseCode);
         if(responseCode == 200) {
-            var hourly = data["hourly"]["data"].slice(0, 9);
-            _view.updateModel(hourly);
+            App.getApp().setProperty("hourly", data.slice(0, 9));
+            _view.updateModel();
         }
     }
 

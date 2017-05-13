@@ -1,12 +1,15 @@
+using Toybox.Application as App;
 using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 using Toybox.Math;
 using Toybox.Time.Gregorian;
 
 class weatherlineView extends Ui.View {
-    var _hourly = [];
     var _screenSize = new[2];
-    var _bgcolor = Gfx.COLOR_BLACK;
+    var degreeHeight;
+    var midScreen;
+    var spacing;
+    var data;
 
     function initialize() {
         View.initialize();
@@ -17,6 +20,8 @@ class weatherlineView extends Ui.View {
         setLayout(Rez.Layouts.MainLayout(dc));
         _screenSize[0] = dc.getWidth();
         _screenSize[1] = dc.getHeight();
+        degreeHeight = -_screenSize[1] / 50;
+        midScreen = _screenSize[1] / 2;
     }
 
     // Called when this View is brought to the foreground. Restore
@@ -30,9 +35,9 @@ class weatherlineView extends Ui.View {
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
         drawBackground(dc);
-        if ((_hourly instanceof Toybox.Lang.Array) && (_hourly.size() > 0)) {
-            //drawChart(dc);
-            drawCircles(dc);
+        data = App.getApp().getProperty("hourly");
+        if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
+            display(dc);
         }
     }
 
@@ -42,145 +47,113 @@ class weatherlineView extends Ui.View {
     function onHide() {
     }
 
-    function drawBackground(dc)
-    {
+    function updateModel() {
+        Ui.requestUpdate();
+    }
+
+    function display(dc) {
+        spacing = (_screenSize[0]) / (data.size() - 1).toFloat();
+        drawVerticalLines(dc, data.size());
+        drawHours(dc);
+        drawTemperatureLines(dc);
+        drawIcons(dc);
+    }
+
+    function drawBackground(dc) {
         dc.clear();
-        dc.setColor(_bgcolor, Gfx.COLOR_TRANSPARENT);
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
         dc.fillRectangle(0, 0, _screenSize[0], _screenSize[1]);
     }
 
-    function drawChart(dc) {
-        var width = _screenSize[0]/_hourly.size();
-        var startingPoint = _screenSize[1]/4*3;
-        for( var i = 0; i < _hourly.size(); i++ ) {
-            var hour = _hourly[i];
-            dc.setColor(Gfx.COLOR_BLUE, Gfx.COLOR_TRANSPARENT);
-            var tempHeight = hour["temperature"]*5;
-            dc.fillRectangle (i*width, startingPoint-tempHeight, width, tempHeight);
+    function drawVerticalLines(dc, size) {
+        dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
+        dc.setPenWidth(2);
+        var x;
+        for(var i = 0; i < size; i++) {
+            x = i * spacing + (spacing/2);
+            dc.drawLine(x, 0, x, _screenSize[1]);
         }
     }
 
-    function drawCircles(dc) {
+    function drawHours(dc) {
+        var x;
+        var hour;
+        var value;
+        for(var i = 0; i < data.size(); i++) {
+            x = i * spacing;
+            hour = Gregorian.info(new Time.Moment(data[i]["time"]), Time.FORMAT_SHORT).hour;
+            if (!System.getDeviceSettings().is24Hour && hour > 12) { hour -= 12; }
+            value = hour.format("%02d");
+            new Ui.Text({:text => value, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => 50}).draw(dc);
+        }
+    }
 
-        var spacing = (_screenSize[0]) / (_hourly.size() - 1).toFloat();
-        var degreeHeight = -_screenSize[1] / 50;
-        var midScreen = _screenSize[1] / 2;
-        var first = _hourly[0]["temperature"];
+    function drawTemperatureLines(dc) {
+        var temperature;
+        var x;
+        var y;
         var previous_x = null;
         var previous_y = null;
+        var precipitation = ["snow", "rain", "sleet"];
+        dc.setPenWidth(2);
+        for(var i = 0; i < data.size(); i++) {
+            temperature = data[i]["temperature"];
+            x = i * spacing;
+            y = midScreen + ((temperature - data[0]["temperature"]) * degreeHeight);
 
-        for(var i = 0; i < _hourly.size() - 1; i++) {
-            var x = i * spacing + (spacing/2);
-
-            dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
-            dc.setPenWidth(2);
-            dc.drawLine(x, 0, x, _screenSize[1]);
-        }
-
-        for(var i = 0; i < _hourly.size(); i++) {
-            var hour = _hourly[i];
-            var x = i * spacing;
-            var y = midScreen + ((hour["temperature"] - first) * degreeHeight);
-
-            if( previous_x != null ) {
-                dc.setColor(Gfx.COLOR_ORANGE, Gfx.COLOR_TRANSPARENT);
-                dc.setPenWidth(2);
+            if(previous_x != null) {
+                if (precipitation.indexOf(data[i]["icon"]) == -1) {
+                    dc.setColor(Gfx.COLOR_ORANGE, Gfx.COLOR_TRANSPARENT);
+                } else {
+                    dc.setColor(Gfx.COLOR_BLUE, Gfx.COLOR_TRANSPARENT);
+                }
                 dc.drawLine(previous_x, previous_y, x, y);
             }
 
             previous_x = x;
             previous_y = y;
         }
+    }
 
+    function drawIcons(dc) {
+        var x;
+        var y;
         var icon;
         var value;
-        var text;
-        var fahrenheit = System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE;
+        var fahrenheit = (System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE);
 
-        for(var i = 0; i < _hourly.size(); i++) {
-            var hour = _hourly[i];
-            var x = i * spacing;
-            var y = midScreen + ((hour["temperature"] - first) * degreeHeight);
+        for(var i = 1; i < data.size(); i = i + 2) {
+            x = i * spacing;
+            y = midScreen + ((data[i]["temperature"] - data[0]["temperature"]) * degreeHeight);
 
-            if (i % 2 == 1) {
-                icon = getIcon(hour["icon"]);
-                icon.setLocation(x - 10, y - 25);
-                icon.draw(dc);
+            icon = getIcon(data[i]["icon"]);
+            icon.setLocation(x - 10, y - 25);
+            icon.draw(dc);
 
-                if (fahrenheit) {
-                    value = Math.round(hour["temperature"] * 9 / 5 + 32).format("%i");
-                } else {
-                    value = Math.round(hour["temperature"]).format("%i");
-                }
-
-                text = new Ui.Text({:text => value, :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER});
-                text.setLocation(x, y);
-                text.draw(dc);
+            if (fahrenheit) {
+                value = data[i]["temperature"] * 9 / 5 + 32;
+            } else {
+                value = data[i]["temperature"];
             }
 
-            var info = Gregorian.info(new Time.Moment(hour["time"]), Time.FORMAT_LONG);
-            value = info.hour.format("%02d");
-            text = new Ui.Text({:text => value, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER});
-            text.setLocation(x, 50);
-            text.draw(dc);
+            new Ui.Text({:text => Math.round(value).format("%i"), :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
         }
     }
 
-    function getIcon(icon) {
-        var ids = {
-            "clear-day" => Rez.Drawables.ClearDay,
-            "clear-night" => Rez.Drawables.ClearNight,
-            "rain" => Rez.Drawables.Rain,
-            "snow" => Rez.Drawables.Snow,
-            "sleet" => Rez.Drawables.Sleet,
-            "wind" => Rez.Drawables.Wind,
-            "fog" => Rez.Drawables.Fog,
-            "cloudy" => Rez.Drawables.Cloudy,
-            "partly-cloudy-day" => Rez.Drawables.PartlyCloudyDay,
-            "partly-cloudy-night" => Rez.Drawables.PartlyCloudyNight
-        };
-        return new Ui.Bitmap({:rezId=>ids[icon]});
-    }
+    var iconIds = {
+        "clear-day" => Rez.Drawables.ClearDay,
+        "clear-night" => Rez.Drawables.ClearNight,
+        "rain" => Rez.Drawables.Rain,
+        "snow" => Rez.Drawables.Snow,
+        "sleet" => Rez.Drawables.Sleet,
+        "wind" => Rez.Drawables.Wind,
+        "fog" => Rez.Drawables.Fog,
+        "cloudy" => Rez.Drawables.Cloudy,
+        "partly-cloudy-day" => Rez.Drawables.PartlyCloudyDay,
+        "partly-cloudy-night" => Rez.Drawables.PartlyCloudyNight
+    };
 
-    function maxDiff() {
-        var diff = 0;
-        for( var i = 0; i < _hourly.size(); i++ ) {
-            var hour = _hourly[i];
-            var currentDiff = (_hourly[0]["temperature"] - hour["temperature"]).abs();
-            if (currentDiff > diff) {
-                diff = currentDiff;
-            }
-        }
-        return Math.ceil(diff);
-    }
-
-    function maxTemperature() {
-        var max = _hourly[0]["temperature"];
-        for( var i = 0; i < _hourly.size(); i++ ) {
-            var hour = _hourly[i];
-            if (hour["temperature"] > max) {
-                max = hour["temperature"];
-            }
-        }
-        return Math.ceil(max);
-    }
-
-    function minTemperature() {
-        var min = _hourly[0]["temperature"];
-        for( var i = 0; i < _hourly.size(); i++ ) {
-            var hour = _hourly[i];
-            if (hour["temperature"] < min) {
-                min = hour["temperature"];
-            }
-        }
-        return Math.floor(min);
-    }
-
-    function updateModel(data) {
-        if (data == :coordinates) {
-            _bgcolor = Gfx.COLOR_WHITE;
-        }
-        _hourly = data;
-        Ui.requestUpdate();
+    function getIcon(name) {
+        return new Ui.Bitmap({:rezId=>iconIds[name]});
     }
 }
