@@ -44,7 +44,8 @@ class weatherlineApp extends App.AppBase {
     // Handles response from server
     function onResponse(responseCode, data) {
         if(responseCode == 200) {
-            App.getApp().setProperty("hourly", data.slice(0, 9));
+            App.getApp().setProperty("hourly", data["hourly"].slice(0, 9));
+            App.getApp().setProperty("currently", data["currently"][0]);
             _view.updateModel();
         }
     }

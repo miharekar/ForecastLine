@@ -6,6 +6,7 @@ using Toybox.Time.Gregorian;
 
 class weatherlineView extends Ui.View {
     var _screenSize = new[2];
+    var fahrenheit;
     var degreeHeight;
     var midScreen;
     var spacing;
@@ -22,6 +23,7 @@ class weatherlineView extends Ui.View {
         _screenSize[1] = dc.getHeight();
         degreeHeight = -_screenSize[1] / 50;
         midScreen = _screenSize[1] / 2;
+        fahrenheit = (System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE);
     }
 
     // Called when this View is brought to the foreground. Restore
@@ -59,6 +61,8 @@ class weatherlineView extends Ui.View {
         drawHours(dc);
         drawTemperatureLines(dc);
         drawIcons(dc);
+        drawBottom(dc);
+        drawCurrent(dc);
     }
 
     function drawBackground(dc) {
@@ -90,7 +94,7 @@ class weatherlineView extends Ui.View {
             hour = Gregorian.info(new Time.Moment(data[i]["time"]), Time.FORMAT_SHORT).hour;
             if (!System.getDeviceSettings().is24Hour && hour > 12) { hour -= 12; }
             value = hour.format("%02d");
-            new Ui.Text({:text => value, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => 50}).draw(dc);
+            new Ui.Text({:text => value, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => _screenSize[1] / 5}).draw(dc);
         }
     }
 
@@ -124,26 +128,48 @@ class weatherlineView extends Ui.View {
     function drawIcons(dc) {
         var x;
         var y;
-        var icon;
-        var value;
-        var fahrenheit = (System.getDeviceSettings().temperatureUnits == System.UNIT_STATUTE);
-
         for(var i = 1; i < data.size(); i = i + 2) {
             x = i * spacing;
             y = midScreen + ((data[i]["temperature"] - data[0]["temperature"]) * degreeHeight);
 
-            icon = getIcon(data[i]["icon"]);
-            icon.setLocation(x - 10, y - 25);
-            icon.draw(dc);
-
-            if (fahrenheit) {
-                value = data[i]["temperature"] * 9 / 5 + 32;
-            } else {
-                value = data[i]["temperature"];
-            }
-
-            new Ui.Text({:text => Math.round(value).format("%i"), :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
+            drawIcon(dc, x - 10, y - 25, data[i]["icon"]);
+            drawTemperature(dc, x, y, data[i]["temperature"]);
         }
+    }
+
+     function drawBottom(dc) {
+        var divider = _screenSize[1]/5*4;
+        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+        dc.fillRectangle(0, divider, _screenSize[0], _screenSize[1]);
+        dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
+        dc.setPenWidth(2);
+        dc.drawLine(0, divider, _screenSize[0], divider);
+    }
+
+    function drawCurrent(dc) {
+        var x = _screenSize[0] / 2;
+        var y = _screenSize[1]/5*4;
+        var currently =  App.getApp().getProperty("currently");
+
+        drawIcon(dc, x - 10, y + 2, currently["icon"]);
+        drawTemperature(dc, x, y + 20, currently["temperature"]);
+    }
+
+    function drawIcon(dc, x, y, symbol) {
+        var icon = getIcon(symbol);
+        icon.setLocation(x, y);
+        icon.draw(dc);
+    }
+
+    function drawTemperature(dc, x, y, temperature) {
+        var value;
+        if (fahrenheit) {
+            value = temperature * 9 / 5 + 32;
+        } else {
+            value = temperature;
+        }
+
+        new Ui.Text({:text => Math.round(value).format("%i"), :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
     }
 
     var iconIds = {
