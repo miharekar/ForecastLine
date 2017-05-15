@@ -4,7 +4,7 @@ using Toybox.Graphics as Gfx;
 using Toybox.Math;
 using Toybox.Time.Gregorian;
 
-class weatherlineView extends Ui.View {
+class ForecastLineView extends Ui.View {
     var _screenSize = new[2];
     var fahrenheit;
     var degreeHeight;
@@ -61,8 +61,12 @@ class weatherlineView extends Ui.View {
         drawHours(dc);
         drawTemperatureLines(dc);
         drawIcons(dc);
-        drawBottom(dc);
-        drawCurrent(dc);
+
+        var currently =  App.getApp().getProperty("currently");
+        if (currently != null) {
+            drawBottom(dc);
+            drawCurrent(dc, currently);
+        }
     }
 
     function drawBackground(dc) {
@@ -146,11 +150,9 @@ class weatherlineView extends Ui.View {
         dc.drawLine(0, divider, _screenSize[0], divider);
     }
 
-    function drawCurrent(dc) {
+    function drawCurrent(dc, currently) {
         var x = _screenSize[0] / 2;
         var y = _screenSize[1]/5*4;
-        var currently =  App.getApp().getProperty("currently");
-
         drawIcon(dc, x - 10, y + 2, currently["icon"]);
         drawTemperature(dc, x, y + 20, currently["temperature"]);
     }

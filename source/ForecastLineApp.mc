@@ -2,7 +2,7 @@ using Toybox.Application as App;
 using Toybox.Communications as Comm;
 using Toybox.Position;
 
-class weatherlineApp extends App.AppBase {
+class ForecastLineApp extends App.AppBase {
     hidden var _view;
 
     function initialize() {
@@ -21,7 +21,7 @@ class weatherlineApp extends App.AppBase {
     // Return the initial view of your application here
     function getInitialView() {
         Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
-        _view = new weatherlineView();
+        _view = new ForecastLineView();
         _view.updateModel();
         return [_view];
     }
