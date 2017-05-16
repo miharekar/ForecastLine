@@ -37,7 +37,6 @@ class ForecastLineView extends Ui.View {
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
         drawBackground(dc);
-        System.println(ForecastLine.HOURLY);
         data = App.getApp().getProperty(ForecastLine.HOURLY);
         if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
             display(dc);
