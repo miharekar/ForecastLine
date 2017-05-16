@@ -29,13 +29,14 @@ class ForecastLineApp extends App.AppBase {
     function onPosition(info) {
         var latLon = info.position.toDegrees();
         var coordinates = latLon[0].toString() + "," + latLon[1].toString();
-        App.getApp().setProperty("coordinates", coordinates);
+        App.getApp().setProperty(ForecastLine.COORDINATES, coordinates);
         fetchData();
+        _view.updateModel();
     }
 
     function fetchData() {
         var url = "https://join.run/dark_sky/hourly";
-        var coordinates = App.getApp().getProperty("coordinates");
+        var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
         if (coordinates != null) {
             Comm.makeWebRequest(url, {"coordinates" => coordinates}, {}, method(:onResponse));
         }
@@ -44,8 +45,8 @@ class ForecastLineApp extends App.AppBase {
     // Handles response from server
     function onResponse(responseCode, data) {
         if(responseCode == 200) {
-            App.getApp().setProperty("hourly", data["hourly"].slice(0, 9));
-            App.getApp().setProperty("currently", data["currently"][0]);
+            App.getApp().setProperty(ForecastLine.HOURLY, data["hourly"].slice(0, 9));
+            App.getApp().setProperty(ForecastLine.CURRENTLY, data["currently"][0]);
             _view.updateModel();
         }
     }

@@ -37,7 +37,8 @@ class ForecastLineView extends Ui.View {
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
         drawBackground(dc);
-        data = App.getApp().getProperty("hourly");
+        System.println(ForecastLine.HOURLY);
+        data = App.getApp().getProperty(ForecastLine.HOURLY);
         if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
             display(dc);
         } else {
@@ -62,9 +63,9 @@ class ForecastLineView extends Ui.View {
         drawTemperatureLines(dc);
         drawIcons(dc);
 
-        var currently =  App.getApp().getProperty("currently");
         if (currently != null) {
             drawBottom(dc);
+        var currently =  App.getApp().getProperty(ForecastLine.CURRENTLY);
             drawCurrent(dc, currently);
         }
     }
@@ -76,7 +77,14 @@ class ForecastLineView extends Ui.View {
     }
 
     function drawEmpty(dc) {
-        new Ui.Text({:text => "Waiting for Location", :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => midScreen}).draw(dc);
+        var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
+        var text;
+        if (coordinates == null) {
+            text = "Waiting for location";
+        } else {
+            text = "Waiting for data";
+        }
+        new Ui.Text({:text => text, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => midScreen}).draw(dc);
     }
 
     function drawVerticalLines(dc, size) {
