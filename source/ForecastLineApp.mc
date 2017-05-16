@@ -7,6 +7,7 @@ class ForecastLineApp extends App.AppBase {
 
     function initialize() {
         AppBase.initialize();
+        App.getApp().setProperty(ForecastLine.CURRENTLY, null);
     }
 
     // onStart() is called on application start up
