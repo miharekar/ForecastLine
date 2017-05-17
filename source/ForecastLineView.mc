@@ -3,6 +3,7 @@ using Toybox.WatchUi as Ui;
 using Toybox.Graphics as Gfx;
 using Toybox.Math;
 using Toybox.Time.Gregorian;
+using Toybox.Attention;
 
 class ForecastLineView extends Ui.View {
     var _screenSize = new[2];
@@ -68,6 +69,7 @@ class ForecastLineView extends Ui.View {
             drawRefreshing(dc);
         } else {
             drawCurrent(dc, currently);
+            Attention.backlight(true);
         }
     }
 
