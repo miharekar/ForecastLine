@@ -39,7 +39,7 @@ class ForecastLineView extends Ui.View {
         View.onUpdate(dc);
         drawBackground(dc);
         data = App.getApp().getProperty(ForecastLine.HOURLY);
-        if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
+        if ((data instanceof Toybox.Lang.Array) && (data.size() > 0) && (data[0][ForecastLine.TEMPERATURE] != null)) {
             display(dc);
         } else {
             drawEmpty(dc);
@@ -106,7 +106,7 @@ class ForecastLineView extends Ui.View {
         var value;
         for(var i = 0; i < data.size(); i++) {
             x = i * spacing;
-            hour = Gregorian.info(new Time.Moment(data[i]["time"]), Time.FORMAT_SHORT).hour;
+            hour = Gregorian.info(new Time.Moment(data[i][ForecastLine.TIME]), Time.FORMAT_SHORT).hour;
             if (!System.getDeviceSettings().is24Hour && hour > 12) { hour -= 12; }
             value = hour.format("%02d");
             new Ui.Text({:text => value, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => _screenSize[1] / 5}).draw(dc);
@@ -122,12 +122,12 @@ class ForecastLineView extends Ui.View {
         var precipitation = ["snow", "rain", "sleet"];
         dc.setPenWidth(3);
         for(var i = 0; i < data.size(); i++) {
-            temperature = data[i]["temperature"];
+            temperature = data[i][ForecastLine.TEMPERATURE];
             x = i * spacing;
-            y = midScreen + ((temperature - data[0]["temperature"]) * degreeHeight);
+            y = midScreen + ((temperature - data[0][ForecastLine.TEMPERATURE]) * degreeHeight);
 
             if(previous_x != null) {
-                if (precipitation.indexOf(data[i]["icon"]) == -1) {
+                if (precipitation.indexOf(data[i][ForecastLine.ICON]) == -1) {
                     dc.setColor(Gfx.COLOR_ORANGE, Gfx.COLOR_TRANSPARENT);
                 } else {
                     dc.setColor(Gfx.COLOR_BLUE, Gfx.COLOR_TRANSPARENT);
@@ -145,10 +145,10 @@ class ForecastLineView extends Ui.View {
         var y;
         for(var i = 1; i < data.size(); i = i + 2) {
             x = i * spacing;
-            y = midScreen + ((data[i]["temperature"] - data[0]["temperature"]) * degreeHeight);
+            y = midScreen + ((data[i][ForecastLine.TEMPERATURE] - data[0][ForecastLine.TEMPERATURE]) * degreeHeight);
 
-            drawIcon(dc, x - 10, y - 25, data[i]["icon"]);
-            drawTemperature(dc, x, y, data[i]["temperature"]);
+            drawIcon(dc, x - 10, y - 25, data[i][ForecastLine.ICON]);
+            drawTemperature(dc, x, y, data[i][ForecastLine.TEMPERATURE]);
         }
     }
 
@@ -164,8 +164,8 @@ class ForecastLineView extends Ui.View {
     function drawCurrent(dc, currently) {
         var x = _screenSize[0] / 2;
         var y = _screenSize[1]/5*4;
-        drawIcon(dc, x - 10, y + 2, currently["icon"]);
-        drawTemperature(dc, x, y + 20, currently["temperature"]);
+        drawIcon(dc, x - 10, y + 2, currently[ForecastLine.ICON]);
+        drawTemperature(dc, x, y + 20, currently[ForecastLine.TEMPERATURE]);
     }
 
     function drawRefreshing(dc) {

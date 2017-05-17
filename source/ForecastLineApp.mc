@@ -36,18 +36,17 @@ class ForecastLineApp extends App.AppBase {
     }
 
     function fetchData() {
-        var url = "https://join.run/dark_sky/hourly";
         var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
         if (coordinates != null) {
-            Comm.makeWebRequest(url, {"coordinates" => coordinates}, {}, method(:onResponse));
+            Comm.makeWebRequest(ForecastLineFetcher.URL, {"coordinates" => coordinates}, {}, method(:onResponse));
         }
     }
 
     // Handles response from server
     function onResponse(responseCode, data) {
         if(responseCode == 200) {
-            App.getApp().setProperty(ForecastLine.HOURLY, data["hourly"].slice(0, 9));
-            App.getApp().setProperty(ForecastLine.CURRENTLY, data["currently"][0]);
+            App.getApp().setProperty(ForecastLine.HOURLY, data["h"].slice(0, 9));
+            App.getApp().setProperty(ForecastLine.CURRENTLY, data["c"][0]);
             _view.updateModel();
         }
     }
