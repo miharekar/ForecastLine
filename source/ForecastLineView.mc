@@ -39,7 +39,7 @@ class ForecastLineView extends Ui.View {
         View.onUpdate(dc);
         drawBackground(dc);
         data = App.getApp().getProperty(ForecastLine.HOURLY);
-        if ((data instanceof Toybox.Lang.Array) && (data.size() > 0) && (data[0][ForecastLine.TEMPERATURE] != null)) {
+        if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
             display(dc);
         } else {
             drawEmpty(dc);
@@ -81,9 +81,12 @@ class ForecastLineView extends Ui.View {
 
     function drawEmpty(dc) {
         var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
+        var error = App.getApp().getProperty(ForecastLine.ERROR);
         var text;
         if (coordinates == null) {
             text = "Waiting for location";
+        } else if (error != null) {
+            text = "Something is not right. Error" + error;
         } else {
             text = "Waiting for data";
         }
