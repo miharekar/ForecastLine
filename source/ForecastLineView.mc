@@ -62,13 +62,16 @@ class ForecastLineView extends Ui.View {
         var hour = now - modulus;
         var start = 0;
         var hourly = App.getApp().getProperty(ForecastLine.HOURLY);
-        for(var i = 0; i < hourly.size(); i++) {
-            if (hourly[i].indexOf(hour) != -1) {
-                start = i;
-                break;
+        if ((hourly instanceof Toybox.Lang.Array) && (hourly.size() > 0)) {
+            for(var i = 0; i < hourly.size(); i++) {
+                if (hourly[i].indexOf(hour) != -1) {
+                    start = i;
+                    break;
+                }
             }
+            return hourly.slice(start, start+9);
         }
-        return hourly.slice(start, start+9);
+        return null;
     }
 
     function display(dc) {
