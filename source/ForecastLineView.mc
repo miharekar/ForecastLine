@@ -38,7 +38,7 @@ class ForecastLineView extends Ui.View {
         // Call the parent onUpdate function to redraw the layout
         View.onUpdate(dc);
         drawBackground(dc);
-        data = App.getApp().getProperty(ForecastLine.HOURLY);
+        data = dataForDisplay();
         if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
             display(dc);
         } else {
@@ -54,6 +54,21 @@ class ForecastLineView extends Ui.View {
 
     function updateModel() {
         Ui.requestUpdate();
+    }
+
+    function dataForDisplay() {
+        var now = Time.now().value();
+        var modulus = now % 3600;
+        var hour = now - modulus;
+        var start = 0;
+        var hourly = App.getApp().getProperty(ForecastLine.HOURLY);
+        for(var i = 0; i < hourly.size(); i++) {
+            if (hourly[i].indexOf(hour) != -1) {
+                start = i;
+                break;
+            }
+        }
+        return hourly.slice(start, start+9);
     }
 
     function display(dc) {

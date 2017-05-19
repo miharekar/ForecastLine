@@ -52,7 +52,7 @@ class ForecastLineApp extends App.AppBase {
     function onResponse(responseCode, data) {
         if(responseCode == 200) {
             App.getApp().deleteProperty(ForecastLine.ERROR);
-            App.getApp().setProperty(ForecastLine.HOURLY, data["h"].slice(0, 9));
+            App.getApp().setProperty(ForecastLine.HOURLY, data["h"]);
             App.getApp().setProperty(ForecastLine.CURRENTLY, data["c"][0]);
         } else {
             App.getApp().setProperty(ForecastLine.ERROR, responseCode);
