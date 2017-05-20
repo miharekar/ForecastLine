@@ -1,13 +1,69 @@
 <drawables>
-    <bitmap id="LauncherIcon" filename="launcher_icon.png" />
-    <bitmap id="ClearDay" filename="clear_day.png" dithering="none" />
-    <bitmap id="ClearNight" filename="clear_night.png" dithering="none" />
-    <bitmap id="Rain" filename="rain.png" dithering="none" />
-    <bitmap id="Snow" filename="snow.png" dithering="none" />
-    <bitmap id="Sleet" filename="sleet.png" dithering="none" />
-    <bitmap id="Wind" filename="wind.png" dithering="none" />
-    <bitmap id="Fog" filename="fog.png" dithering="none" />
-    <bitmap id="Cloudy" filename="cloudy.png" dithering="none" />
-    <bitmap id="PartlyCloudyDay" filename="partly_cloudy_day.png" dithering="none" />
-    <bitmap id="PartlyCloudyNight" filename="partly_cloudy_night.png" dithering="none" />
+    <bitmap id="LauncherIcon" filename="launcher_icon.png">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="ClearDay" filename="clear_day.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="ClearNight" filename="clear_night.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="Rain" filename="rain.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="Snow" filename="snow.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="Sleet" filename="sleet.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="Wind" filename="wind.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="Fog" filename="fog.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="Cloudy" filename="cloudy.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="PartlyCloudyDay" filename="partly_cloudy_day.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+    <bitmap id="PartlyCloudyNight" filename="partly_cloudy_night.png" dithering="none">
+      <palette><color>000000</color></palette>
+    </bitmap>
+
+    <bitmap id="LauncherIconWhite" filename="launcher_icon.png">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="ClearDayWhite" filename="clear_day.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="ClearNightWhite" filename="clear_night.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="RainWhite" filename="rain.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="SnowWhite" filename="snow.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="SleetWhite" filename="sleet.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="WindWhite" filename="wind.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="FogWhite" filename="fog.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="CloudyWhite" filename="cloudy.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="PartlyCloudyDayWhite" filename="partly_cloudy_day.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
+    <bitmap id="PartlyCloudyNightWhite" filename="partly_cloudy_night.png" dithering="none">
+      <palette><color>FFFFFF</color></palette>
+    </bitmap>
 </drawables>

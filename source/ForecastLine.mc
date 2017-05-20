@@ -9,4 +9,7 @@ module ForecastLine {
     const TEMPERATURE = 0;
     const TIME = 1;
     const ICON = 2;
+
+    const ON_WHITE = 0;
+    const ON_BLACK = 1;
 }

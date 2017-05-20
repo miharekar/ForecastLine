@@ -6,6 +6,7 @@ using Toybox.Time.Gregorian;
 using Toybox.Attention;
 
 class ForecastLineView extends Ui.View {
+    var bg = ForecastLine.ON_WHITE;
     var _screenSize = new[2];
     var fahrenheit;
     var degreeHeight;
@@ -36,6 +37,7 @@ class ForecastLineView extends Ui.View {
     // Update the view
     function onUpdate(dc) {
         // Call the parent onUpdate function to redraw the layout
+        bg = ForecastLine.ON_WHITE;
         View.onUpdate(dc);
         drawBackground(dc);
         data = dataForDisplay();
@@ -93,7 +95,8 @@ class ForecastLineView extends Ui.View {
 
     function drawBackground(dc) {
         dc.clear();
-        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+        var color = (bg == ForecastLine.ON_WHITE) ? Gfx.COLOR_WHITE : Gfx.COLOR_BLACK;
+        dc.setColor(color, Gfx.COLOR_TRANSPARENT);
         dc.fillRectangle(0, 0, _screenSize[0], _screenSize[1]);
     }
 
@@ -175,7 +178,8 @@ class ForecastLineView extends Ui.View {
 
      function drawBottom(dc) {
         var divider = _screenSize[1]/5*4;
-        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
+        var color = (bg == ForecastLine.ON_WHITE) ? Gfx.COLOR_WHITE : Gfx.COLOR_BLACK;
+        dc.setColor(color, Gfx.COLOR_TRANSPARENT);
         dc.fillRectangle(0, divider, _screenSize[0], _screenSize[1]);
         dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
         dc.setPenWidth(2);
@@ -208,24 +212,35 @@ class ForecastLineView extends Ui.View {
         } else {
             value = temperature;
         }
-
-        new Ui.Text({:text => Math.round(value).format("%i"), :color => Gfx.COLOR_BLACK, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
+        var color = (bg == ForecastLine.ON_WHITE) ? Gfx.COLOR_BLACK : Gfx.COLOR_WHITE;
+        new Ui.Text({:text => Math.round(value).format("%i"), :color => color, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
     }
 
     var iconIds = {
-        "clear-day" => Rez.Drawables.ClearDay,
-        "clear-night" => Rez.Drawables.ClearNight,
-        "rain" => Rez.Drawables.Rain,
-        "snow" => Rez.Drawables.Snow,
-        "sleet" => Rez.Drawables.Sleet,
-        "wind" => Rez.Drawables.Wind,
-        "fog" => Rez.Drawables.Fog,
-        "cloudy" => Rez.Drawables.Cloudy,
-        "partly-cloudy-day" => Rez.Drawables.PartlyCloudyDay,
-        "partly-cloudy-night" => Rez.Drawables.PartlyCloudyNight
+        "clear-day" => :ClearDay,
+        "clear-night" => :ClearNight,
+        "rain" => :Rain,
+        "snow" => :Snow,
+        "sleet" => :Sleet,
+        "wind" => :Wind,
+        "fog" => :Fog,
+        "cloudy" => :Cloudy,
+        "partly-cloudy-day" => :PartlyCloudyDay,
+        "partly-cloudy-night" => :PartlyCloudyNight,
+        "clear-day-white" => :ClearDayWhite,
+        "clear-night-white" => :ClearNightWhite,
+        "rain-white" => :RainWhite,
+        "snow-white" => :SnowWhite,
+        "sleet-white" => :SleetWhite,
+        "wind-white" => :WindWhite,
+        "fog-white" => :FogWhite,
+        "cloudy-white" => :CloudyWhite,
+        "partly-cloudy-day-white" => :PartlyCloudyDayWhite,
+        "partly-cloudy-night-white" => :PartlyCloudyNightWhite
     };
 
     function getIcon(name) {
-        return new Ui.Bitmap({:rezId=>iconIds[name]});
+        name = (bg == ForecastLine.ON_WHITE) ? name : name + "-white";
+        return new Ui.Bitmap({:rezId=>Rez.Drawables[iconIds[name]]});
     }
 }
