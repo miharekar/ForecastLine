@@ -1,0 +1,15 @@
+<resources>
+    <properties>
+        <property id="background" type="boolean">false</property>
+    </properties>
+
+    <strings>
+       <string id="background_title">Black Background</string>
+    </strings>
+
+    <settings>
+        <setting propertyKey="@Properties.background" title="@Strings.background_title">
+            <settingConfig type="boolean" />
+        </setting>
+    </settings>
+</resources>

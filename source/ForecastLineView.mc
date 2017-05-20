@@ -37,7 +37,7 @@ class ForecastLineView extends Ui.View {
     // Update the view
     function onUpdate(dc) {
         // Call the parent onUpdate function to redraw the layout
-        bg = ForecastLine.ON_WHITE;
+        bg = App.getApp().getProperty("background");
         View.onUpdate(dc);
         drawBackground(dc);
         data = dataForDisplay();

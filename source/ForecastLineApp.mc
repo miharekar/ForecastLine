@@ -25,6 +25,12 @@ class ForecastLineApp extends App.AppBase {
     function onStop(state) {
     }
 
+    // For this app all that needs to be done is trigger a Ui refresh
+    // since the settings are only used in onUpdate().
+    function onSettingsChanged() {
+        _view.updateModel();
+    }
+
     // Return the initial view of your application here
     function getInitialView() {
         Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
