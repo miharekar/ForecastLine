@@ -6,13 +6,15 @@ using Toybox.Time.Gregorian;
 using Toybox.Attention;
 
 class ForecastLineView extends Ui.View {
-    var bg = ForecastLine.ON_WHITE;
     var _screenSize = new[2];
     var fahrenheit;
     var degreeHeight;
     var midScreen;
     var spacing;
     var data;
+    var bgColor; //background
+    var fgColor; //foreground
+    var acColor; //accent
 
     function initialize() {
         View.initialize();
@@ -36,9 +38,7 @@ class ForecastLineView extends Ui.View {
 
     // Update the view
     function onUpdate(dc) {
-        // Call the parent onUpdate function to redraw the layout
-        bg = App.getApp().getProperty("background");
-        View.onUpdate(dc);
+        setColors();
         drawBackground(dc);
         data = dataForDisplay();
         if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
@@ -76,6 +76,19 @@ class ForecastLineView extends Ui.View {
         return null;
     }
 
+    function setColors() {
+        var bg = App.getApp().getProperty("background");
+        if (bg == ForecastLine.ON_WHITE) {
+            bgColor = Gfx.COLOR_WHITE;
+            fgColor = Gfx.COLOR_BLACK;
+            acColor = Gfx.COLOR_LT_GRAY;
+        } else {
+            bgColor = Gfx.COLOR_BLACK;
+            fgColor = Gfx.COLOR_WHITE;
+            acColor = Gfx.COLOR_DK_GRAY;
+        }
+    }
+
     function display(dc) {
         spacing = (_screenSize[0]) / (data.size() - 1).toFloat();
         drawVerticalLines(dc, data.size());
@@ -95,8 +108,7 @@ class ForecastLineView extends Ui.View {
 
     function drawBackground(dc) {
         dc.clear();
-        var color = (bg == ForecastLine.ON_WHITE) ? Gfx.COLOR_WHITE : Gfx.COLOR_BLACK;
-        dc.setColor(color, Gfx.COLOR_TRANSPARENT);
+        dc.setColor(bgColor, Gfx.COLOR_TRANSPARENT);
         dc.fillRectangle(0, 0, _screenSize[0], _screenSize[1]);
     }
 
@@ -111,11 +123,11 @@ class ForecastLineView extends Ui.View {
         } else {
             text = "Waiting for data";
         }
-        new Ui.Text({:text => text, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => midScreen}).draw(dc);
+        new Ui.Text({:text => text, :color => acColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => midScreen}).draw(dc);
     }
 
     function drawVerticalLines(dc, size) {
-        dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
+        dc.setColor(acColor, Gfx.COLOR_TRANSPARENT);
         dc.setPenWidth(2);
         var x;
         for(var i = 0; i < size; i++) {
@@ -133,7 +145,7 @@ class ForecastLineView extends Ui.View {
             hour = Gregorian.info(new Time.Moment(data[i][ForecastLine.TIME]), Time.FORMAT_SHORT).hour;
             if (!System.getDeviceSettings().is24Hour && hour > 12) { hour -= 12; }
             value = hour.format("%02d");
-            new Ui.Text({:text => value, :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => _screenSize[1] / 5}).draw(dc);
+            new Ui.Text({:text => value, :color => acColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => _screenSize[1] / 5}).draw(dc);
         }
     }
 
@@ -178,10 +190,9 @@ class ForecastLineView extends Ui.View {
 
      function drawBottom(dc) {
         var divider = _screenSize[1]/5*4;
-        var color = (bg == ForecastLine.ON_WHITE) ? Gfx.COLOR_WHITE : Gfx.COLOR_BLACK;
-        dc.setColor(color, Gfx.COLOR_TRANSPARENT);
+        dc.setColor(bgColor, Gfx.COLOR_TRANSPARENT);
         dc.fillRectangle(0, divider, _screenSize[0], _screenSize[1]);
-        dc.setColor(Gfx.COLOR_LT_GRAY, Gfx.COLOR_TRANSPARENT);
+        dc.setColor(acColor, Gfx.COLOR_TRANSPARENT);
         dc.setPenWidth(2);
         dc.drawLine(0, divider, _screenSize[0], divider);
     }
@@ -196,7 +207,7 @@ class ForecastLineView extends Ui.View {
     function drawRefreshing(dc) {
         var x = _screenSize[0] / 2;
         var y = _screenSize[1]/5*4 + 5;
-        new Ui.Text({:text => "Refreshing", :color => Gfx.COLOR_LT_GRAY, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
+        new Ui.Text({:text => "Refreshing", :color => acColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
     }
 
     function drawIcon(dc, x, y, symbol) {
@@ -212,8 +223,7 @@ class ForecastLineView extends Ui.View {
         } else {
             value = temperature;
         }
-        var color = (bg == ForecastLine.ON_WHITE) ? Gfx.COLOR_BLACK : Gfx.COLOR_WHITE;
-        new Ui.Text({:text => Math.round(value).format("%i"), :color => color, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
+        new Ui.Text({:text => Math.round(value).format("%i"), :color => fgColor, :font => Gfx.FONT_TINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => y}).draw(dc);
     }
 
     var iconIds = {
@@ -240,6 +250,7 @@ class ForecastLineView extends Ui.View {
     };
 
     function getIcon(name) {
+        var bg = App.getApp().getProperty("background");
         name = (bg == ForecastLine.ON_WHITE) ? name : name + "-white";
         return new Ui.Bitmap({:rezId=>Rez.Drawables[iconIds[name]]});
     }
