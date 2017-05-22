@@ -16,23 +16,17 @@ class ForecastLineApp extends App.AppBase {
         }
     }
 
-    // onStart() is called on application start up
-    function onStart(state) {
-        fetchData();
-    }
-
-    // onStop() is called when your application is exiting
-    function onStop(state) {
-    }
-
     // For this app all that needs to be done is trigger a Ui refresh
     // since the settings are only used in onUpdate().
     function onSettingsChanged() {
+        verifyDonation();
         _view.updateModel();
     }
 
     // Return the initial view of your application here
     function getInitialView() {
+        verifyDonation();
+        fetchData();
         Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
         _view = new ForecastLineView();
         _view.updateModel();
@@ -50,7 +44,7 @@ class ForecastLineApp extends App.AppBase {
     function fetchData() {
         var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
         if (coordinates != null) {
-            Comm.makeWebRequest(ForecastLineFetcher.URL, {"coordinates" => coordinates}, {:headers => {"Authorization" => ForecastLineFetcher.AUTH}}, method(:onResponse));
+            Comm.makeWebRequest(ForecastLineSecrets.URL, {"coordinates" => coordinates}, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
         }
     }
 
@@ -67,4 +61,10 @@ class ForecastLineApp extends App.AppBase {
         _view.updateModel();
     }
 
+    function verifyDonation() {
+        var donation = App.getApp().getProperty("donation").toLower();
+        if (!donation.equals(ForecastLineSecrets.DONATION)) {
+            App.getApp().setProperty("background", false);
+        }
+    }
 }

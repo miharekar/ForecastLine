@@ -1,15 +1,20 @@
 <resources>
-    <properties>
-        <property id="background" type="boolean">false</property>
-    </properties>
+  <properties>
+    <property id="donation" type="string"></property>
+    <property id="background" type="boolean">false</property>
+  </properties>
 
-    <strings>
-       <string id="background_title">Black Background</string>
-    </strings>
+  <strings>
+    <string id="donation_title">Donation</string>
+    <string id="background_title">Black Background</string>
+  </strings>
 
-    <settings>
-        <setting propertyKey="@Properties.background" title="@Strings.background_title">
-            <settingConfig type="boolean" />
-        </setting>
-    </settings>
+  <settings>
+    <setting propertyKey="@Properties.donation" title="@Strings.donation_title">
+      <settingConfig type="alphaNumeric"/>
+    </setting>
+    <setting propertyKey="@Properties.background" title="@Strings.background_title">
+      <settingConfig type="boolean" />
+    </setting>
+  </settings>
 </resources>
