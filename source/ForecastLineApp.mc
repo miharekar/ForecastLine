@@ -8,6 +8,7 @@ class ForecastLineApp extends App.AppBase {
     function initialize() {
         AppBase.initialize();
         App.getApp().deleteProperty(ForecastLine.CURRENTLY);
+        verifyDonation();
 
         // New version data resetter
         if (App.getApp().getProperty(ForecastLine.RESET_DATA) != 1) {
@@ -25,27 +26,34 @@ class ForecastLineApp extends App.AppBase {
 
     // Return the initial view of your application here
     function getInitialView() {
-        verifyDonation();
-        fetchData();
-        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
         _view = new ForecastLineView();
-        _view.updateModel();
+        getPosition();
         return [_view];
+    }
+
+    function getPosition() {
+        var info = Position.getInfo();
+        if (info.accuracy != Position.QUALITY_NOT_AVAILABLE) {
+            onPosition(info);
+        } else {
+            fetchData(App.getApp().getProperty(ForecastLine.COORDINATES));
+            _view.updateModel();
+        }
+        Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
+    }
+
+    function fetchData(coordinates) {
+        if (coordinates != null) {
+            Comm.makeWebRequest(ForecastLineSecrets.URL, {"coordinates" => coordinates}, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
+        }
     }
 
     function onPosition(info) {
         var latLon = info.position.toDegrees();
         var coordinates = latLon[0].toString() + "," + latLon[1].toString();
         App.getApp().setProperty(ForecastLine.COORDINATES, coordinates);
-        fetchData();
+        fetchData(coordinates);
         _view.updateModel();
-    }
-
-    function fetchData() {
-        var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
-        if (coordinates != null) {
-            Comm.makeWebRequest(ForecastLineSecrets.URL, {"coordinates" => coordinates}, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
-        }
     }
 
     // Handles response from server
