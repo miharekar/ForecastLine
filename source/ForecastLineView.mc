@@ -198,10 +198,10 @@ class ForecastLineView extends Ui.View {
     }
 
     function drawCurrent(dc, currently) {
-        var x = _screenSize[0] / 2;
-        var y = _screenSize[1]/5*4;
-        drawIcon(dc, x - 10, y + 2, currently[ForecastLine.ICON]);
-        drawTemperature(dc, x, y + 20, currently[ForecastLine.TEMPERATURE]);
+        var x = _screenSize[0] / 2  + (spacing/2);
+        var y = _screenSize[1]/5*4 + 10;
+        drawIcon(dc, x - 10 - spacing, y, currently[ForecastLine.ICON]);
+        drawTemperature(dc, x, y - (_screenSize[1]/80), currently[ForecastLine.TEMPERATURE]);
     }
 
     function drawRefreshing(dc) {
