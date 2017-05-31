@@ -62,6 +62,7 @@ class ForecastLineApp extends App.AppBase {
             App.getApp().deleteProperty(ForecastLine.ERROR);
             App.getApp().setProperty(ForecastLine.HOURLY, data["h"]);
             App.getApp().setProperty(ForecastLine.CURRENTLY, data["c"][0]);
+            App.getApp().setProperty(ForecastLine.LOCATION, data["l"]);
         } else {
             App.getApp().setProperty(ForecastLine.ERROR, responseCode);
         }

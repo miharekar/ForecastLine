@@ -94,6 +94,7 @@ class ForecastLineView extends Ui.View {
         spacing = (_screenSize[0]) / (data.size() - 1).toFloat();
         drawVerticalLines(dc, data.size());
         drawHours(dc);
+        drawLocation(dc);
         drawTemperatureLines(dc);
         drawIcons(dc);
         drawBottom(dc);
@@ -147,6 +148,13 @@ class ForecastLineView extends Ui.View {
             if (!System.getDeviceSettings().is24Hour && hour > 12) { hour -= 12; }
             value = hour.format("%02d");
             new Ui.Text({:text => value, :color => acColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => x, :locY => _screenSize[1] / 5}).draw(dc);
+        }
+    }
+
+    function drawLocation(dc) {
+        var value = App.getApp().getProperty(ForecastLine.LOCATION);
+        if (value != null) {
+            new Ui.Text({:text => value, :color => acColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => _screenSize[1] / 5 * 3}).draw(dc);
         }
     }
 

@@ -5,6 +5,7 @@ module ForecastLine {
     const HOURLY = 3;
     const DAILY = 4;
     const ERROR = 5;
+    const LOCATION = 6;
 
     const TEMPERATURE = 0;
     const TIME = 1;
