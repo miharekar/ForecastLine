@@ -52,6 +52,7 @@ class ForecastLineView extends Ui.View {
     // state of this View here. This includes freeing resources from
     // memory.
     function onHide() {
+        Attention.backlight(false);
     }
 
     function updateModel() {
