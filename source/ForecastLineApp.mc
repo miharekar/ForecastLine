@@ -71,8 +71,8 @@ class ForecastLineApp extends App.AppBase {
     }
 
     function verifyDonation() {
-        var donation = App.getApp().getProperty("donation").toLower();
-        if (!donation.equals(ForecastLineSecrets.DONATION)) {
+        var donation = App.getApp().getProperty("donation");
+        if (donation == null || !donation.toLower().equals(ForecastLineSecrets.DONATION)) {
             App.getApp().setProperty("background", false);
         }
     }
