@@ -52,7 +52,6 @@ class ForecastLineView extends Ui.View {
     // state of this View here. This includes freeing resources from
     // memory.
     function onHide() {
-        Attention.backlight(false);
     }
 
     function updateModel() {
@@ -104,7 +103,7 @@ class ForecastLineView extends Ui.View {
             drawRefreshing(dc);
         } else {
             drawCurrent(dc, currently);
-            Attention.backlight(true);
+            Attention.vibrate([new Attention.VibeProfile(50, 10)]);
         }
     }
 
