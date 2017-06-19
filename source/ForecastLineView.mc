@@ -78,14 +78,15 @@ class ForecastLineView extends Ui.View {
 
     function setColors() {
         var bg = App.getApp().getProperty("background");
+        var contrast = App.getApp().getProperty("contrast");
         if (bg == ForecastLine.ON_WHITE) {
             bgColor = Gfx.COLOR_WHITE;
             fgColor = Gfx.COLOR_BLACK;
-            acColor = Gfx.COLOR_LT_GRAY;
+            acColor = contrast ? Gfx.COLOR_DK_GRAY : Gfx.COLOR_LT_GRAY;
         } else {
             bgColor = Gfx.COLOR_BLACK;
             fgColor = Gfx.COLOR_WHITE;
-            acColor = Gfx.COLOR_DK_GRAY;
+            acColor = contrast ? Gfx.COLOR_LT_GRAY : Gfx.COLOR_DK_GRAY;
         }
     }
 
