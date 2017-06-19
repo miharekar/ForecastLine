@@ -120,7 +120,7 @@ class ForecastLineView extends Ui.View {
         if (coordinates == null) {
             text = "Waiting for location";
         } else if (error != null) {
-            text = "Something is not right. Error" + error;
+            text = "Error" + error;
         } else {
             text = "Waiting for data";
         }
@@ -153,7 +153,7 @@ class ForecastLineView extends Ui.View {
     function drawLocation(dc) {
         var value = App.getApp().getProperty(ForecastLine.LOCATION);
         if (value != null) {
-            new Ui.Text({:text => value, :color => acColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => _screenSize[1] / 5 * 3}).draw(dc);
+            new Ui.Text({:text => value, :color => acColor, :backgroundColor => bgColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => _screenSize[1] / 5 * 3}).draw(dc);
         }
     }
 
