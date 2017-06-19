@@ -22,6 +22,7 @@ class ForecastLineApp extends App.AppBase {
     // since the settings are only used in onUpdate().
     function onSettingsChanged() {
         verifyDonation();
+		_view.data_at = null;
         _view.updateModel();
     }
 
@@ -67,6 +68,7 @@ class ForecastLineApp extends App.AppBase {
             App.getApp().setProperty(ForecastLine.HOURLY, data["h"]);
             App.getApp().setProperty(ForecastLine.CURRENTLY, data["c"][0]);
             App.getApp().setProperty(ForecastLine.LOCATION, data["l"]);
+            App.getApp().setProperty(ForecastLine.DATA_AT, Time.now().value());
         } else {
             App.getApp().setProperty(ForecastLine.ERROR, responseCode);
         }

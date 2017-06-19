@@ -8,6 +8,7 @@ module ForecastLine {
     const LOCATION = 6;
     const LATITUDE = 7;
     const LONGITUDE = 8;
+    const DATA_AT = 9;
 
     const TEMPERATURE = 0;
     const TIME = 1;

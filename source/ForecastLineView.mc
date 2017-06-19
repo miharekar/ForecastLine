@@ -12,6 +12,7 @@ class ForecastLineView extends Ui.View {
     var midScreen;
     var spacing;
     var data;
+    var data_at;
     var bgColor; //background
     var fgColor; //foreground
     var acColor; //accent
@@ -38,13 +39,16 @@ class ForecastLineView extends Ui.View {
 
     // Update the view
     function onUpdate(dc) {
-        setColors();
-        drawBackground(dc);
-        data = dataForDisplay();
-        if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
-            display(dc);
-        } else {
-            drawEmpty(dc);
+        if (data_at == null || data_at != App.getApp().getProperty(ForecastLine.DATA_AT)) {
+        	data_at = App.getApp().getProperty(ForecastLine.DATA_AT);
+            setColors();
+            drawBackground(dc);
+            data = dataForDisplay();
+            if ((data instanceof Toybox.Lang.Array) && (data.size() > 0)) {
+                display(dc);
+            } else {
+                drawEmpty(dc);
+            }
         }
     }
 
@@ -154,9 +158,9 @@ class ForecastLineView extends Ui.View {
     function drawLocation(dc) {
         var text;
         if (App.getApp().getProperty("coordinates")) {
-        	text = App.getApp().getProperty(ForecastLine.LATITUDE).format("%.4f") + ", " + App.getApp().getProperty(ForecastLine.LONGITUDE).format("%.4f");
+          text = App.getApp().getProperty(ForecastLine.LATITUDE).format("%.4f") + ", " + App.getApp().getProperty(ForecastLine.LONGITUDE).format("%.4f");
         } else {
-        	text = App.getApp().getProperty(ForecastLine.LOCATION);
+          text = App.getApp().getProperty(ForecastLine.LOCATION);
         }
 
         if (text != null) {
