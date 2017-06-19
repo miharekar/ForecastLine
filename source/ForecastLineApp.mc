@@ -4,6 +4,7 @@ using Toybox.Position;
 
 class ForecastLineApp extends App.AppBase {
     hidden var _view;
+    hidden var _lastRefresh;
 
     function initialize() {
         AppBase.initialize();
@@ -43,7 +44,8 @@ class ForecastLineApp extends App.AppBase {
     }
 
     function fetchData(coordinates) {
-        if (coordinates != null) {
+        if (coordinates != null && (_lastRefresh == null || _lastRefresh < Time.now().value() - 10)) {
+        	_lastRefresh = Time.now().value();
             Comm.makeWebRequest(ForecastLineSecrets.URL, {"coordinates" => coordinates}, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
         }
     }
