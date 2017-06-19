@@ -152,9 +152,15 @@ class ForecastLineView extends Ui.View {
     }
 
     function drawLocation(dc) {
-        var value = App.getApp().getProperty(ForecastLine.LOCATION);
-        if (value != null) {
-            new Ui.Text({:text => value, :color => acColor, :backgroundColor => bgColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => _screenSize[1] / 5 * 3}).draw(dc);
+        var text;
+        if (App.getApp().getProperty("coordinates")) {
+        	text = App.getApp().getProperty(ForecastLine.LATITUDE).format("%.4f") + ", " + App.getApp().getProperty(ForecastLine.LONGITUDE).format("%.4f");
+        } else {
+        	text = App.getApp().getProperty(ForecastLine.LOCATION);
+        }
+
+        if (text != null) {
+            new Ui.Text({:text => text, :color => acColor, :backgroundColor => bgColor, :font => Gfx.FONT_XTINY, :justification => Gfx.TEXT_JUSTIFY_CENTER, :locX => _screenSize[0] / 2, :locY => _screenSize[1] / 5 * 3}).draw(dc);
         }
     }
 

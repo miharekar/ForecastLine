@@ -1,17 +1,22 @@
 <resources>
   <properties>
+    <property id="coordinates" type="boolean">false</property>
     <property id="contrast" type="boolean">false</property>
     <property id="donation" type="string"></property>
     <property id="background" type="boolean">false</property>
   </properties>
 
   <strings>
+    <string id="coordinates_title">Show Coordinates instead of Location Name</string>
     <string id="contrast_title">Extra Contrast</string>
     <string id="donation_title">Donation</string>
     <string id="background_title">Black Background</string>
   </strings>
 
   <settings>
+    <setting propertyKey="@Properties.coordinates" title="@Strings.coordinates_title">
+      <settingConfig type="boolean" />
+    </setting>
     <setting propertyKey="@Properties.contrast" title="@Strings.contrast_title">
       <settingConfig type="boolean" />
     </setting>

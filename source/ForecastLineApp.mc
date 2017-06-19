@@ -54,6 +54,8 @@ class ForecastLineApp extends App.AppBase {
         var latLon = info.position.toDegrees();
         var coordinates = latLon[0].toString() + "," + latLon[1].toString();
         App.getApp().setProperty(ForecastLine.COORDINATES, coordinates);
+        App.getApp().setProperty(ForecastLine.LATITUDE, latLon[0]);
+        App.getApp().setProperty(ForecastLine.LONGITUDE, latLon[1]);
         fetchData(coordinates);
         _view.updateModel();
     }
