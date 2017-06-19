@@ -108,7 +108,9 @@ class ForecastLineView extends Ui.View {
             drawRefreshing(dc);
         } else {
             drawCurrent(dc, currently);
-            Attention.vibrate([new Attention.VibeProfile(50, 10)]);
+            if (Attention has :vibrate) {
+                Attention.vibrate([new Attention.VibeProfile(50, 10)]);
+            }
         }
     }
 
