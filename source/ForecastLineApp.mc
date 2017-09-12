@@ -27,8 +27,8 @@ class ForecastLineApp extends App.AppBase {
     }
 
     //register for temporal events if they are supported
-    if(Toybox.System has :ServiceDelegate) {
-      Background.registerForTemporalEvent(new Time.Duration(5 * 60));
+    if(canDoBackground() && hasApiKey()) {
+      Background.registerForTemporalEvent(new Time.Duration(15 * 60));
     }
 
     _view = new ForecastLineView();
@@ -68,7 +68,11 @@ class ForecastLineApp extends App.AppBase {
   function fetchData() {
     if (phoneConnected() && hasCoordinates() && isNotRefreshingNow() && dataIsOld()) {
       _lastRefresh = Time.now().value();
-      Comm.makeWebRequest(ForecastLineSecrets.URL, {"coordinates" => App.getApp().getProperty(ForecastLine.COORDINATES)}, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
+      var params = {"coordinates" => App.getApp().getProperty(ForecastLine.COORDINATES)};
+      if (hasApiKey()) {
+      	params.put("api_key", App.getApp().getProperty("ds_api_key"));
+      }
+      Comm.makeWebRequest(ForecastLineSecrets.URL, params, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
     }
   }
 
@@ -86,7 +90,7 @@ class ForecastLineApp extends App.AppBase {
 
   function dataIsOld() {
     var data_at = App.getApp().getProperty(ForecastLine.DATA_AT);
-    return (data_at == null || data_at < Time.now().value() - (5 * 60));
+    return (data_at == null || data_at < Time.now().value() - (15 * 60));
   }
 
   function onPosition(info) {
@@ -122,5 +126,14 @@ class ForecastLineApp extends App.AppBase {
     if (donation == null || !donation.toLower().equals(ForecastLineSecrets.DONATION)) {
       App.getApp().setProperty("background", false);
     }
+  }
+  
+  function canDoBackground() {
+  	return (Toybox.System has :ServiceDelegate);
+  }
+  
+  function hasApiKey() {
+  	var ds_api_key = App.getApp().getProperty("ds_api_key");
+  	return (ds_api_key != null && ds_api_key.length() > 10);
   }
 }
