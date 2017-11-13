@@ -11,21 +11,21 @@ class ForecastLineApp extends App.AppBase {
   function initialize() {
     AppBase.initialize();
   }
-
-  // Return the initial view of your application here
-  function getInitialView() {
+  
+  function onStart(state) {
     if (dataIsOld()) {
       App.getApp().deleteProperty(ForecastLine.CURRENTLY);
     }
-
     verifyDonation();
-
     // New version data resetter
     if (App.getApp().getProperty(ForecastLine.RESET_DATA) != 1) {
       App.getApp().clearProperties();
       App.getApp().setProperty(ForecastLine.RESET_DATA, 1);
     }
+  }
 
+  // Return the initial view of your application here
+  function getInitialView() {
     //register for temporal events if they are supported
     if(canDoBackground() && hasApiKey()) {
       Background.registerForTemporalEvent(new Time.Duration(15 * 60));
@@ -34,6 +34,9 @@ class ForecastLineApp extends App.AppBase {
     _view = new ForecastLineView();
     getPosition();
     return [_view];
+  }
+  
+  function onStop(state) {
   }
 
   // For this app all that needs to be done is trigger a Ui refresh
