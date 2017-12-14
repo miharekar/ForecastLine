@@ -14,9 +14,9 @@ class ForecastLineBackgroundServiceDelegate extends System.ServiceDelegate {
   }
 
   function onTemporalEvent() {
-    var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
-    var ds_api_key = App.getApp().getProperty("ds_api_key");
-    if (coordinates != null && ds_api_key != null && ds_api_key.length() > 10 && System.getDeviceSettings().phoneConnected) {
+    var coordinates = Application.Storage.getValue(ForecastLine.COORDINATES);
+    var ds_api_key = Application.Properties.getValue("ds_api_key");
+    if (coordinates != null && ds_api_key != null && ds_api_key.length() == 32 && System.getDeviceSettings().phoneConnected) {
       var params = {"coordinates" => coordinates, "api_key" => ds_api_key};
       Comm.makeWebRequest(ForecastLineSecrets.URL, params, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
     } else {

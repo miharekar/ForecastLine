@@ -39,8 +39,8 @@ class ForecastLineView extends Ui.View {
 
   // Update the view
   function onUpdate(dc) {
-    if (data_at == null || data_at != App.getApp().getProperty(ForecastLine.DATA_AT)) {
-      data_at = App.getApp().getProperty(ForecastLine.DATA_AT);
+    if (data_at == null || data_at != Application.Storage.getValue(ForecastLine.DATA_AT)) {
+      data_at = Application.Storage.getValue(ForecastLine.DATA_AT);
       setColors();
       drawBackground(dc);
       data = dataForDisplay();
@@ -68,7 +68,7 @@ class ForecastLineView extends Ui.View {
     var modulus = now % 3600;
     var hour = now - modulus;
     var start = 0;
-    var hourly = App.getApp().getProperty(ForecastLine.HOURLY);
+    var hourly = Application.Storage.getValue(ForecastLine.HOURLY);
     if ((hourly instanceof Toybox.Lang.Array) && (hourly.size() > 0)) {
       for(var i = 0; i < hourly.size(); i++) {
         if (hourly[i].indexOf(hour) != -1) {
@@ -82,8 +82,8 @@ class ForecastLineView extends Ui.View {
   }
 
   function setColors() {
-    var bg = App.getApp().getProperty("background");
-    var contrast = App.getApp().getProperty("contrast");
+    var bg = Application.Properties.getValue("background");
+    var contrast = Application.Properties.getValue("contrast");
     if (bg == ForecastLine.ON_WHITE) {
       bgColor = Gfx.COLOR_WHITE;
       fgColor = Gfx.COLOR_BLACK;
@@ -104,7 +104,7 @@ class ForecastLineView extends Ui.View {
     drawIcons(dc);
     drawBottom(dc);
 
-    var currently =  App.getApp().getProperty(ForecastLine.CURRENTLY);
+    var currently =  Application.Storage.getValue(ForecastLine.CURRENTLY);
     if (currently == null) {
       drawRefreshing(dc);
     } else {
@@ -122,8 +122,8 @@ class ForecastLineView extends Ui.View {
   }
 
   function drawEmpty(dc) {
-    var coordinates = App.getApp().getProperty(ForecastLine.COORDINATES);
-    var error = App.getApp().getProperty(ForecastLine.ERROR);
+    var coordinates = Application.Storage.getValue(ForecastLine.COORDINATES);
+    var error = Application.Storage.getValue(ForecastLine.ERROR);
     var text;
     if (coordinates == null) {
       text = "Waiting for location";
@@ -160,10 +160,10 @@ class ForecastLineView extends Ui.View {
 
   function drawLocation(dc) {
     var text;
-    if (App.getApp().getProperty("coordinates")) {
-      text = App.getApp().getProperty(ForecastLine.LATITUDE).format("%.4f") + ", " + App.getApp().getProperty(ForecastLine.LONGITUDE).format("%.4f");
+    if (Application.Properties.getValue("coordinates")) {
+      text = Application.Storage.getValue(ForecastLine.LATITUDE).format("%.4f") + ", " + Application.Storage.getValue(ForecastLine.LONGITUDE).format("%.4f");
     } else {
-      text = App.getApp().getProperty(ForecastLine.LOCATION);
+      text = Application.Storage.getValue(ForecastLine.LOCATION);
     }
 
     if (text != null) {
@@ -272,7 +272,7 @@ class ForecastLineView extends Ui.View {
   };
 
   function getIcon(name) {
-    var bg = App.getApp().getProperty("background");
+    var bg = Application.Properties.getValue("background");
     name = (bg == ForecastLine.ON_WHITE) ? name : name + "-white";
     return new Ui.Bitmap({:rezId=>Rez.Drawables[iconIds[name]]});
   }

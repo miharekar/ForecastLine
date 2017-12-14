@@ -11,16 +11,16 @@ class ForecastLineApp extends App.AppBase {
   function initialize() {
     AppBase.initialize();
   }
-  
+
   function onStart(state) {
     if (dataIsOld()) {
       App.getApp().deleteProperty(ForecastLine.CURRENTLY);
     }
     verifyDonation();
     // New version data resetter
-    if (App.getApp().getProperty(ForecastLine.RESET_DATA) != 1) {
+    if (Application.Storage.getValue(ForecastLine.RESET_DATA) != 1) {
       App.getApp().clearProperties();
-      App.getApp().setProperty(ForecastLine.RESET_DATA, 1);
+      Application.Storage.setValue(ForecastLine.RESET_DATA, 1);
     }
   }
 
@@ -35,7 +35,7 @@ class ForecastLineApp extends App.AppBase {
     getPosition();
     return [_view];
   }
-  
+
   function onStop(state) {
   }
 
@@ -71,9 +71,9 @@ class ForecastLineApp extends App.AppBase {
   function fetchData() {
     if (phoneConnected() && hasCoordinates() && isNotRefreshingNow() && dataIsOld()) {
       _lastRefresh = Time.now().value();
-      var params = {"coordinates" => App.getApp().getProperty(ForecastLine.COORDINATES)};
+      var params = {"coordinates" => Application.Storage.getValue(ForecastLine.COORDINATES)};
       if (hasApiKey()) {
-      	params.put("api_key", App.getApp().getProperty("ds_api_key"));
+      	params.put("api_key", Application.Properties.getValue("ds_api_key"));
       }
       Comm.makeWebRequest(ForecastLineSecrets.URL, params, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
     }
@@ -84,7 +84,7 @@ class ForecastLineApp extends App.AppBase {
   }
 
   function hasCoordinates() {
-    return (App.getApp().getProperty(ForecastLine.COORDINATES) != null);
+    return (Application.Storage.getValue(ForecastLine.COORDINATES) != null);
   }
 
   function isNotRefreshingNow() {
@@ -92,16 +92,16 @@ class ForecastLineApp extends App.AppBase {
   }
 
   function dataIsOld() {
-    var data_at = App.getApp().getProperty(ForecastLine.DATA_AT);
+    var data_at = Application.Storage.getValue(ForecastLine.DATA_AT);
     return (data_at == null || data_at < Time.now().value() - (15 * 60));
   }
 
   function onPosition(info) {
     var latLon = info.position.toDegrees();
     var coordinates = latLon[0].toString() + "," + latLon[1].toString();
-    App.getApp().setProperty(ForecastLine.COORDINATES, coordinates);
-    App.getApp().setProperty(ForecastLine.LATITUDE, latLon[0]);
-    App.getApp().setProperty(ForecastLine.LONGITUDE, latLon[1]);
+    Application.Storage.setValue(ForecastLine.COORDINATES, coordinates);
+    Application.Storage.setValue(ForecastLine.LATITUDE, latLon[0]);
+    Application.Storage.setValue(ForecastLine.LONGITUDE, latLon[1]);
     fetchData();
     _view.updateModel();
   }
@@ -110,7 +110,7 @@ class ForecastLineApp extends App.AppBase {
     if(responseCode == 200) {
       saveData(data);
     } else {
-      App.getApp().setProperty(ForecastLine.ERROR, responseCode);
+      Application.Storage.setValue(ForecastLine.ERROR, responseCode);
       App.getApp().deleteProperty(ForecastLine.HOURLY);
       App.getApp().deleteProperty(ForecastLine.CURRENTLY);
       App.getApp().deleteProperty(ForecastLine.LOCATION);
@@ -122,25 +122,25 @@ class ForecastLineApp extends App.AppBase {
 
   function saveData(data) {
     App.getApp().deleteProperty(ForecastLine.ERROR);
-    App.getApp().setProperty(ForecastLine.HOURLY, data["h"]);
-    App.getApp().setProperty(ForecastLine.CURRENTLY, data["c"][0]);
-    App.getApp().setProperty(ForecastLine.LOCATION, data["l"]);
-    App.getApp().setProperty(ForecastLine.DATA_AT, Time.now().value());
+    Application.Storage.setValue(ForecastLine.HOURLY, data["h"]);
+    Application.Storage.setValue(ForecastLine.CURRENTLY, data["c"][0]);
+    Application.Storage.setValue(ForecastLine.LOCATION, data["l"]);
+    Application.Storage.setValue(ForecastLine.DATA_AT, Time.now().value());
   }
 
   function verifyDonation() {
-    var donation = App.getApp().getProperty("donation");
+    var donation = Application.Properties.getValue("donation");
     if (donation == null || !donation.toLower().equals(ForecastLineSecrets.DONATION)) {
-      App.getApp().setProperty("background", false);
+      Application.Properties.setValue("background", false);
     }
   }
-  
+
   function canDoBackground() {
   	return (Toybox.System has :ServiceDelegate);
   }
-  
+
   function hasApiKey() {
-  	var ds_api_key = App.getApp().getProperty("ds_api_key");
-  	return (ds_api_key != null && ds_api_key.length() > 10);
+  	var ds_api_key = Application.Properties.getValue("ds_api_key");
+  	return (ds_api_key != null && ds_api_key.length() == 32);
   }
 }
