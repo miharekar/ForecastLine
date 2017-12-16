@@ -14,13 +14,13 @@ class ForecastLineApp extends App.AppBase {
 
   function onStart(state) {
     if (dataIsOld()) {
-      App.getApp().deleteProperty(ForecastLine.CURRENTLY);
+      App.Storage.deleteValue(ForecastLine.CURRENTLY);
     }
     verifyDonation();
     // New version data resetter
-    if (Application.Storage.getValue(ForecastLine.RESET_DATA) != 1) {
-      App.getApp().clearProperties();
-      Application.Storage.setValue(ForecastLine.RESET_DATA, 1);
+    if (App.Storage.getValue(ForecastLine.RESET_DATA) != 1) {
+      App.Storage.clearValues();
+      App.Storage.setValue(ForecastLine.RESET_DATA, 1);
     }
   }
 
@@ -71,9 +71,9 @@ class ForecastLineApp extends App.AppBase {
   function fetchData() {
     if (phoneConnected() && hasCoordinates() && isNotRefreshingNow() && dataIsOld()) {
       _lastRefresh = Time.now().value();
-      var params = {"coordinates" => Application.Storage.getValue(ForecastLine.COORDINATES)};
+      var params = {"coordinates" => App.Storage.getValue(ForecastLine.COORDINATES)};
       if (hasApiKey()) {
-      	params.put("api_key", Application.Properties.getValue("ds_api_key"));
+      	params.put("api_key", App.Properties.getValue("ds_api_key"));
       }
       Comm.makeWebRequest(ForecastLineSecrets.URL, params, {:headers => {"Authorization" => ForecastLineSecrets.AUTH}}, method(:onResponse));
     }
@@ -84,7 +84,7 @@ class ForecastLineApp extends App.AppBase {
   }
 
   function hasCoordinates() {
-    return (Application.Storage.getValue(ForecastLine.COORDINATES) != null);
+    return (App.Storage.getValue(ForecastLine.COORDINATES) != null);
   }
 
   function isNotRefreshingNow() {
@@ -92,16 +92,16 @@ class ForecastLineApp extends App.AppBase {
   }
 
   function dataIsOld() {
-    var data_at = Application.Storage.getValue(ForecastLine.DATA_AT);
+    var data_at = App.Storage.getValue(ForecastLine.DATA_AT);
     return (data_at == null || data_at < Time.now().value() - (15 * 60));
   }
 
   function onPosition(info) {
     var latLon = info.position.toDegrees();
     var coordinates = latLon[0].toString() + "," + latLon[1].toString();
-    Application.Storage.setValue(ForecastLine.COORDINATES, coordinates);
-    Application.Storage.setValue(ForecastLine.LATITUDE, latLon[0]);
-    Application.Storage.setValue(ForecastLine.LONGITUDE, latLon[1]);
+    App.Storage.setValue(ForecastLine.COORDINATES, coordinates);
+    App.Storage.setValue(ForecastLine.LATITUDE, latLon[0]);
+    App.Storage.setValue(ForecastLine.LONGITUDE, latLon[1]);
     fetchData();
     _view.updateModel();
   }
@@ -110,28 +110,28 @@ class ForecastLineApp extends App.AppBase {
     if(responseCode == 200) {
       saveData(data);
     } else {
-      Application.Storage.setValue(ForecastLine.ERROR, responseCode);
-      App.getApp().deleteProperty(ForecastLine.HOURLY);
-      App.getApp().deleteProperty(ForecastLine.CURRENTLY);
-      App.getApp().deleteProperty(ForecastLine.LOCATION);
-      App.getApp().deleteProperty(ForecastLine.DATA_AT);
+      App.Storage.setValue(ForecastLine.ERROR, responseCode);
+      App.Storage.deleteValue(ForecastLine.HOURLY);
+      App.Storage.deleteValue(ForecastLine.CURRENTLY);
+      App.Storage.deleteValue(ForecastLine.LOCATION);
+      App.Storage.deleteValue(ForecastLine.DATA_AT);
     }
 
     _view.updateModel();
   }
 
   function saveData(data) {
-    App.getApp().deleteProperty(ForecastLine.ERROR);
-    Application.Storage.setValue(ForecastLine.HOURLY, data["h"]);
-    Application.Storage.setValue(ForecastLine.CURRENTLY, data["c"][0]);
-    Application.Storage.setValue(ForecastLine.LOCATION, data["l"]);
-    Application.Storage.setValue(ForecastLine.DATA_AT, Time.now().value());
+    App.Storage.deleteValue(ForecastLine.ERROR);
+    App.Storage.setValue(ForecastLine.HOURLY, data["h"]);
+    App.Storage.setValue(ForecastLine.CURRENTLY, data["c"][0]);
+    App.Storage.setValue(ForecastLine.LOCATION, data["l"]);
+    App.Storage.setValue(ForecastLine.DATA_AT, Time.now().value());
   }
 
   function verifyDonation() {
-    var donation = Application.Properties.getValue("donation");
+    var donation = App.Properties.getValue("donation");
     if (donation == null || !donation.toLower().equals(ForecastLineSecrets.DONATION)) {
-      Application.Properties.setValue("background", false);
+      App.Properties.setValue("background", false);
     }
   }
 
@@ -140,7 +140,7 @@ class ForecastLineApp extends App.AppBase {
   }
 
   function hasApiKey() {
-  	var ds_api_key = Application.Properties.getValue("ds_api_key");
+  	var ds_api_key = App.Properties.getValue("ds_api_key");
   	return (ds_api_key != null && ds_api_key.length() == 32);
   }
 }
