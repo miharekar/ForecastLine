@@ -7,6 +7,7 @@ using Toybox.Position;
 class ForecastLineApp extends App.AppBase {
   hidden var _view;
   hidden var _lastRefresh;
+  hidden var _lastPosition;
 
   function initialize() {
     AppBase.initialize();
@@ -43,6 +44,7 @@ class ForecastLineApp extends App.AppBase {
   // since the settings are only used in onUpdate().
   function onSettingsChanged() {
     verifyDonation();
+    hasApiKey();
     _view.data_at = null;
     _view.updateModel();
   }
@@ -90,6 +92,10 @@ class ForecastLineApp extends App.AppBase {
   function isNotRefreshingNow() {
     return (_lastRefresh == null || _lastRefresh > Time.now().value() - 10);
   }
+  
+  function shouldRefreshPosition(info) {
+    return (_lastPosition == null || _lastPosition < info.when.value() - 5);
+  }
 
   function dataIsOld() {
     var data_at = App.Storage.getValue(ForecastLine.DATA_AT);
@@ -97,13 +103,18 @@ class ForecastLineApp extends App.AppBase {
   }
 
   function onPosition(info) {
-    var latLon = info.position.toDegrees();
-    var coordinates = latLon[0].toString() + "," + latLon[1].toString();
-    App.Storage.setValue(ForecastLine.COORDINATES, coordinates);
-    App.Storage.setValue(ForecastLine.LATITUDE, latLon[0]);
-    App.Storage.setValue(ForecastLine.LONGITUDE, latLon[1]);
-    fetchData();
-    _view.updateModel();
+  	if (shouldRefreshPosition(info)) { 
+  	  _lastPosition = info.when.value();
+  	  var latLon = info.position.toDegrees();
+      var coordinates = latLon[0].toString() + "," + latLon[1].toString();
+      App.Storage.deleteValue(ForecastLine.CURRENTLY);
+      App.Storage.deleteValue(ForecastLine.DATA_AT);
+      App.Storage.setValue(ForecastLine.COORDINATES, coordinates);
+      App.Storage.setValue(ForecastLine.LATITUDE, latLon[0]);
+      App.Storage.setValue(ForecastLine.LONGITUDE, latLon[1]);
+      fetchData();
+      _view.updateModel();
+  	}
   }
 
   function onResponse(responseCode, data) {
@@ -131,6 +142,7 @@ class ForecastLineApp extends App.AppBase {
   function verifyDonation() {
     var donation = App.Properties.getValue("donation");
     if (donation == null || !donation.toLower().equals(ForecastLineSecrets.DONATION)) {
+      App.Properties.setValue("donation", "");
       App.Properties.setValue("background", false);
     }
   }
@@ -141,6 +153,10 @@ class ForecastLineApp extends App.AppBase {
 
   function hasApiKey() {
   	var ds_api_key = App.Properties.getValue("ds_api_key");
-  	return (ds_api_key != null && ds_api_key.length() == 32);
+  	if (ds_api_key == null || ds_api_key.length() != 32) {
+      App.Properties.setValue("ds_api_key", "");
+      return false;
+    }
+  	return true;
   }
 }
