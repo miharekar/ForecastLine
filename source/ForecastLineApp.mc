@@ -99,8 +99,6 @@ class ForecastLineApp extends App.AppBase {
   function onPosition(info) {
     var latLon = info.position.toDegrees();
     var coordinates = latLon[0].toString() + "," + latLon[1].toString();
-    App.Storage.deleteValue(ForecastLine.CURRENTLY);
-    App.Storage.deleteValue(ForecastLine.DATA_AT);
     App.Storage.setValue(ForecastLine.COORDINATES, coordinates);
     App.Storage.setValue(ForecastLine.LATITUDE, latLon[0]);
     App.Storage.setValue(ForecastLine.LONGITUDE, latLon[1]);
