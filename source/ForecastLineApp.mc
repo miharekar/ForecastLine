@@ -18,9 +18,9 @@ class ForecastLineApp extends App.AppBase {
     }
     verifyDonation();
     // New version data resetter
-    if (App.Storage.getValue(ForecastLine.RESET_DATA) != 1) {
+    if (App.Storage.getValue(ForecastLine.RESET_DATA) != 2) {
       App.Storage.clearValues();
-      App.Storage.setValue(ForecastLine.RESET_DATA, 1);
+      App.Storage.setValue(ForecastLine.RESET_DATA, 2);
     }
   }
 
@@ -44,8 +44,11 @@ class ForecastLineApp extends App.AppBase {
   function onSettingsChanged() {
     verifyDonation();
     hasApiKey();
-    _view.data_at = null;
-    _view.updateModel();
+    App.Storage.deleteValue(ForecastLine.DATA_AT);
+    if (_view instanceof ForecastLineView) {
+      _view.data_at = null;
+      _view.updateModel();
+    }
   }
 
   function onBackgroundData(data) {
@@ -60,7 +63,7 @@ class ForecastLineApp extends App.AppBase {
 
   function getPosition() {
     var info = Position.getInfo();
-    if (info.accuracy >= Position.QUALITY_USABLE) {
+    if (info.accuracy == Position.QUALITY_GOOD) {
       onPosition(info);
     } else {
       Position.enableLocationEvents(Position.LOCATION_ONE_SHOT, method(:onPosition));
