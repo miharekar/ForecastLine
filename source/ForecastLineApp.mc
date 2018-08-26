@@ -1,4 +1,5 @@
 using Toybox.Application as App;
+using Toybox.WatchUi;
 using Toybox.Background;
 using Toybox.Communications as Comm;
 using Toybox.Position;
@@ -12,7 +13,8 @@ class ForecastLineApp extends App.AppBase {
     AppBase.initialize();
   }
 
-  function onStart(state) {
+  // Return the initial view of your application here
+  function getInitialView() {
     if (dataIsOld()) {
       App.Storage.deleteValue(ForecastLine.CURRENTLY);
     }
@@ -22,10 +24,6 @@ class ForecastLineApp extends App.AppBase {
       App.Storage.clearValues();
       App.Storage.setValue(ForecastLine.RESET_DATA, 2);
     }
-  }
-
-  // Return the initial view of your application here
-  function getInitialView() {
     //register for temporal events if they are supported
     if(canDoBackground() && hasApiKey()) {
       Background.registerForTemporalEvent(new Time.Duration(15 * 60));
